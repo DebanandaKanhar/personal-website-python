@@ -1,5 +1,6 @@
 .env
 .venv/
+.gh-config/
 __pycache__/
 *.pyc
 artifacts/
