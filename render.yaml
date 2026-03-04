@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: personal-website-python-api
+    env: docker
+    plan: free
+    region: oregon
+    autoDeploy: true
+    healthCheckPath: /healthz
+    domains:
+      - debanandakanhar.org
+      - www.debanandakanhar.org
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_HOST
+        value: 0.0.0.0
+      - key: APP_PORT
+        value: 8000
+      - key: DATABASE_URL
+        value: sqlite:///./personal_website.db
+      - key: APP_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

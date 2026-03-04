@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title if post else "Article Not Found" }}{% endblock %}
+
+{% block content %}
+{% if post %}
+<article class="article">
+  <p class="meta">{{ post.category.name if post.category else "General" }} · {{ post.reading_time }} min read</p>
+  <h1>{{ post.title }}</h1>
+  <p class="excerpt">{{ post.excerpt }}</p>
+  <div class="content">{{ post.content }}</div>
+</article>
+
+{% if related_posts %}
+<section>
+  <h2>Related Articles</h2>
+  <ul class="list">
+    {% for item in related_posts %}
+    <li><a href="/articles/{{ item.slug }}">{{ item.title }}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<script>
+  fetch("/api/analytics/pageview", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      path: window.location.pathname,
+      referrer: document.referrer,
+      user_agent: navigator.userAgent
+    })
+  }).catch(() => {});
+</script>
+{% else %}
+<p class="empty">Article not found.</p>
+{% endif %}
+{% endblock %}

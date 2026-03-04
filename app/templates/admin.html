@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Admin | Personal Website Python{% endblock %}
+
+{% block content %}
+<section class="hero compact">
+  <h1>Admin Portal</h1>
+  <p>Login and manage posts from this page.</p>
+</section>
+
+<div class="admin-grid">
+  <section class="card">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label>Email</label>
+      <input id="admin-email" type="email" required>
+      <label>Password</label>
+      <input id="admin-password" type="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-status" class="meta"></p>
+  </section>
+
+  <section class="card">
+    <h2>Create Post</h2>
+    <form id="create-post-form">
+      <label>Title</label>
+      <input id="post-title" required>
+      <label>Slug</label>
+      <input id="post-slug" required>
+      <label>Excerpt</label>
+      <textarea id="post-excerpt"></textarea>
+      <label>Content</label>
+      <textarea id="post-content" rows="8"></textarea>
+      <label>Status</label>
+      <select id="post-status">
+        <option value="draft">draft</option>
+        <option value="published">published</option>
+      </select>
+      <button type="submit">Create</button>
+    </form>
+    <p id="post-status-msg" class="meta"></p>
+  </section>
+</div>
+
+<section class="card">
+  <h2>All Posts</h2>
+  <button id="refresh-posts">Refresh</button>
+  <pre id="posts-output" class="code"></pre>
+</section>
+
+<script>
+  const tokenKey = "admin_token";
+  const statusEl = document.getElementById("login-status");
+  const postStatusEl = document.getElementById("post-status-msg");
+  const postsOutput = document.getElementById("posts-output");
+
+  function getToken() {
+    return localStorage.getItem(tokenKey) || "";
+  }
+
+  async function loadPosts() {
+    const token = getToken();
+    if (!token) {
+      postsOutput.textContent = "Login first.";
+      return;
+    }
+    const res = await fetch("/api/admin/posts", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    postsOutput.textContent = JSON.stringify(data, null, 2);
+  }
+
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("admin-email").value;
+    const password = document.getElementById("admin-password").value;
+    const res = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok && data.access_token) {
+      localStorage.setItem(tokenKey, data.access_token);
+      statusEl.textContent = "Login successful.";
+      loadPosts();
+    } else {
+      statusEl.textContent = data.detail || "Login failed.";
+    }
+  });
+
+  document.getElementById("create-post-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const token = getToken();
+    if (!token) {
+      postStatusEl.textContent = "Login required.";
+      return;
+    }
+    const payload = {
+      title: document.getElementById("post-title").value,
+      slug: document.getElementById("post-slug").value,
+      excerpt: document.getElementById("post-excerpt").value,
+      content: document.getElementById("post-content").value,
+      status: document.getElementById("post-status").value,
+      tags: [],
+      featured: false,
+      reading_time: 5
+    };
+    const res = await fetch("/api/admin/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      postStatusEl.textContent = "Post created.";
+      loadPosts();
+    } else {
+      postStatusEl.textContent = data.detail || data.error || "Create failed.";
+    }
+  });
+
+  document.getElementById("refresh-posts").addEventListener("click", loadPosts);
+  loadPosts();
+</script>
+{% endblock %}

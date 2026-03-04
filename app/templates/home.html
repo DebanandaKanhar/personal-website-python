@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Personal Website Python{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>AI, Data Science, and Technology Notes</h1>
+  <p>Python-powered version of your personal website with CMS APIs, analytics, and MLOps baseline.</p>
+</section>
+
+<section>
+  <h2>Featured Posts</h2>
+  {% if featured_posts %}
+  <div class="grid">
+    {% for post in featured_posts %}
+    <article class="card">
+      <div class="meta">{{ post.category.name if post.category else "General" }}</div>
+      <h3><a href="/articles/{{ post.slug }}">{{ post.title }}</a></h3>
+      <p>{{ post.excerpt or "No excerpt available." }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No featured posts yet.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Latest Articles</h2>
+  {% if latest_posts %}
+  <ul class="list">
+    {% for post in latest_posts %}
+    <li>
+      <a href="/articles/{{ post.slug }}">{{ post.title }}</a>
+      <span>{{ post.published_at.strftime("%Y-%m-%d") if post.published_at else "draft" }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">No posts published yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

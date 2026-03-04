@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Personal Website Python{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container nav">
+      <a class="logo" href="/">Debananda Kanhar</a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/articles">Articles</a>
+        <a href="/admin">Admin</a>
+        <a href="/docs" target="_blank" rel="noreferrer">API Docs</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">
+    <div class="container">Built with FastAPI, MLOps-ready and production-focused.</div>
+  </footer>
+</body>
+</html>
