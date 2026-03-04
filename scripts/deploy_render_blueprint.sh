@@ -4,17 +4,14 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-if ! command -v render >/dev/null 2>&1; then
-  echo "Render CLI not found, using npx fallback..."
-  NPX_RENDER=1
-else
-  NPX_RENDER=0
-fi
+DEPLOY_URL="https://render.com/deploy?repo=https://github.com/DebanandaKanhar/personal-website-python"
 
-echo "Starting Render Blueprint deployment..."
-if [[ "$NPX_RENDER" -eq 1 ]]; then
-  npx -y render blueprint launch --file render.yaml
-else
-  render blueprint launch --file render.yaml
+echo "Open this URL to deploy the blueprint:"
+echo "$DEPLOY_URL"
+
+if command -v open >/dev/null 2>&1; then
+  open "$DEPLOY_URL"
+elif command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$DEPLOY_URL"
 fi
-echo "Deployment request submitted. Verify /healthz after rollout."
+echo "After deploy, add domain records in your DNS provider."
